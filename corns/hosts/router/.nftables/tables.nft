@@ -1,0 +1,52 @@
+table inet filter {
+    chain output {
+        type filter hook output priority 100; policy accept;
+    }
+    chain input {
+        type filter hook input priority filter; policy drop;
+
+        iifname "lo" accept comment "Permitir trafico local loopback"
+
+        ct state { established, related } counter accept comment "Permitir conexiones establecidas"
+
+        # Permitir ICMP (ping) para diagnóstico
+        ip protocol icmp counter accept comment "Permitir ping"
+
+        # Acceso de administracion completa desde la VPN WireGuard
+        iifname "wireguard" counter accept comment "Permitir acceso administrativo desde VPN"
+
+
+        # Puertos de entrada por la WAN / red local (ens18)
+        iifname "ens18" tcp dport { 22, 64022 } counter accept comment "SSH (real y trampa)"
+        iifname "ens18" udp dport 51820 counter accept comment "WireGuard VPN"
+        iifname "ens18" udp dport 53 counter accept comment "DNS UDP para la red local"
+        iifname "ens18" tcp dport { 53, 80, 443 } counter accept comment "DNS TCP, Web UI y HTTPS para la red local"
+
+        # Bloquear cualquier otro acceso directo hacia el router
+        drop comment "Descartar resto de trafico hacia el router"
+    }
+    chain forward {
+        type filter hook forward priority filter; policy drop;
+
+        ct state { established, related } counter accept comment "Permitir conexiones establecidas"
+
+        # Regla de aislamiento: la VPN NO puede tocar la red de casa
+        iifname "wireguard" ip daddr 192.168.1.0/24 counter drop comment "Aislar VPN de la red domestica"
+
+        # Permitir salida a Internet desde la VPN
+        iifname "wireguard" oifname "ens18" counter accept comment "Salida a Internet WAN"
+    }
+}
+table ip nat {
+    chain prerouting {
+        type nat hook prerouting priority dstnat; policy accept;
+    }
+
+    chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+
+        # Masquerade para salir a Internet por ens18
+        oifname "ens18" masquerade comment "NAT de salida a WAN"
+    }
+}
+    

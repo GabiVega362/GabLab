@@ -1,0 +1,9 @@
+# Files
+/**/.DS_Store
+/**/result*
+
+# Folders
+/**/.claude/
+/**/.direnv/
+/**/.opencode/
+/**/.pi/

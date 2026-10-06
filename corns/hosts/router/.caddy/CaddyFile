@@ -1,0 +1,67 @@
+(defaults) {
+        import security-headers
+        import joke-headers
+        import encoding
+    }
+
+    (encoding) {
+        encode gzip zstd
+    }
+
+    (security-headers) {
+        header {
+            >cross-origin-opener-policy "same-origin"
+            >referrer-policy "strict-origin-when-cross-origin"
+            >strict-transport-security "max-age=31536000; includeSubDomains; preload"
+            >x-content-type-options "nosniff"
+            >x-frame-options "sameorigin"
+        }
+    }
+
+    (joke-headers) {
+        header {
+            >x-clacks-overhead "GNU GabiVega"
+            >x-powered-by "Nix flakes, caffeine and existential dread"
+            >x-wisdom "Have you tried turning it off and on again?"
+            >x-sysadmin-prayer "Lord grant me patience, but not via apt-get"
+        }
+    }
+
+    (cloudflare-tls) {
+        tls /var/lib/acme/gablab.wtf/cert.pem /var/lib/acme/gablab.wtf/key.pem
+    }
+
+# ┌───────────────────────────────────────┐
+# │               Servicios               │
+# └───────────────────────────────────────┘
+
+    pihole.gablab.wtf {
+        import cloudflare-tls
+        import defaults
+        header {
+            >server "Smart Fridge OS v1.33.7"
+            >x-joke "A SQL query walks into a bar, sees two tables and asks: 'Can I join you?'"
+        }
+        reverse_proxy 127.0.0.1:8088
+    }
+
+    pairdrop.gablab.wtf {
+        import cloudflare-tls
+        import defaults
+        header {
+            >server "Game Boy Color"
+            >x-joke "There are 10 types of people: those who understand binary and those who get dates"
+        }
+        reverse_proxy 192.168.1.4:8080
+    }
+
+    welcome.gablab.wtf {
+        import cloudflare-tls
+        import defaults
+        header {
+            >server "Tecktonik SoundSystem 2008"
+            >x-joke "Hardcore never dies, but our knees do"
+        }
+        reverse_proxy 192.168.1.4:8081
+    }
+
