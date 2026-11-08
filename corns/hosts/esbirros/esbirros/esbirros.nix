@@ -5,5 +5,48 @@
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 {
     virtualisation.docker.enable = true;
+    systemd.services.docker = {
+        requires = [ "firewall.service" ];
+        after = [ "firewall.service" ];
+    };
     environment.etc."rakazo/compose.yaml".source = ./docker-compose.images.yml;
+
+    systemd.services.rakazo = {
+        description = "Mis esclavos";
+        requires = [ "docker.service" ];
+        after = [ "docker.service" ];
+        environment = {
+            API_URL = "https://esbirros.gablab.wtf";
+            BETTER_AUTH_URL = "https://esbirros.gablab.wtf";
+            WEB_ORIGIN = "https://esbirros.gablab.wtf";
+            RAKAZO_HOST = "esbirros.gablab.wtf";
+            RAKAZO_WEB_BIND = "10.10.20.10";
+        };
+        serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            WorkingDirectory = "/var/lib/rakazo";
+            ExecStart = "${pkgs.docker-compose}/bin/docker-compose --env-file /var/lib/rakazo/rakazo.env -f /etc/rakazo/compose.yaml up -d";
+            ExecStop = "${pkgs.docker-compose}/bin/docker-compose --env-file /var/lib/rakazo/rakazo.env -f /etc/rakazo/compose.yaml stop";
+            TimeoutStopSec = "55min";
+        };
+    };
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃                 Network                   ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+    networking.firewall.extraCommands = ''
+        # Contenedores: sin conexiones nuevas hacia la propia VM.
+        ip46tables -I nixos-fw 1 -i docker0 -m conntrack ! --ctstate ESTABLISHED,RELATED -j DROP
+        ip46tables -I nixos-fw 1 -i br+ -m conntrack ! --ctstate ESTABLISHED,RELATED -j DROP
+
+        # Preparar la cadena incluso si Docker todavia no ha arrancado.
+        iptables -w -nL DOCKER-USER >/dev/null 2>&1 ||
+            iptables -w -N DOCKER-USER
+
+        # shortcut: solo web IPv4 en 5173 y bridges estandar; revisar si cambia la publicacion.
+        iptables -w -C DOCKER-USER -i ens18 ! -s 10.10.20.1 -p tcp --dport 5173 -m conntrack --ctdir ORIGINAL -j DROP 2>/dev/null ||
+            iptables -w -I DOCKER-USER 1 -i ens18 ! -s 10.10.20.1 -p tcp --dport 5173 -m conntrack --ctdir ORIGINAL -j DROP
+    '';
 }

@@ -8,4 +8,5 @@ in
       "corns/hosts/router/.wireguard/peers.conf.age".publicKeys = [ vegadmin router ];
       "corns/hosts/router/.wireguard/wireguard-profiles.conf.age".publicKeys = [ vegadmin ];
       "corns/hosts/router/.pihole/pihole.env.age".publicKeys = [ vegadmin router ];
+      "corns/hosts/esbirros/esbirros/rakazo.env.age".publicKeys = [ vegadmin router ];
     }
