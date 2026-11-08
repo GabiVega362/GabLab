@@ -75,7 +75,7 @@
         }
         @oXefe remote_ip 10.10.10.2/32
         handle @oXefe {
-            respond "Esbirros: esperando ordenes" 200
+            reverse_proxy 10.10.20.10:5173
         }
         handle {
             respond "YOU SHALL NOT PASS!" 403
