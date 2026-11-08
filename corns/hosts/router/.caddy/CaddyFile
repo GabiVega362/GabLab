@@ -65,3 +65,19 @@
         reverse_proxy 192.168.1.4:8081
     }
 
+    esbirros.gablab.wtf {
+        import cloudflare-tls
+        import defaults
+        bind 10.10.10.254
+        header {
+            >server "Ministry of Questionable Automation"
+            >x-joke "Our agents have root access but no common sense"
+        }
+        @oXefe remote_ip 10.10.10.2/32
+        handle @oXefe {
+            respond "Esbirros: esperando ordenes" 200
+        }
+        handle {
+            respond "YOU SHALL NOT PASS!" 403
+        }
+    }
