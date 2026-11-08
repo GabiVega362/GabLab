@@ -67,6 +67,7 @@
             nixosConfigurations = {
                 router = nixConf ./corns/hosts/router/default.nix;
                 spidernet = nixConf ./corns/hosts/spidernet/default.nix;
+                esbirros = nixConf ./corns/hosts/esbirros/default.nix;
             }; 
 
         };

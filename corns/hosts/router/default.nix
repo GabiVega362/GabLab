@@ -31,6 +31,12 @@
           prefixLength = 24;
         }];
       };
+      ens20 = { # Agents
+        ipv4.addresses = [{
+          address = "10.10.20.1";
+          prefixLength = 24;
+        }];
+      };
     };
 
     boot.kernel.sysctl = {
