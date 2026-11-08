@@ -28,7 +28,7 @@
                 listeningMode = "LOCAL";
                 hosts = [
                     "192.168.1.3   router.gablab.wtf pihole.gablab.wtf pairdrop.gablab.wtf vpn.gablab.wtf "
-                    "10.10.10.254  vpn.gablab.wtf welcome.gablab.wtf"  
+                    "10.10.10.254  vpn.gablab.wtf welcome.gablab.wtf esbirros.gablab.wtf"
                 ];
                 upstreams = ["192.168.1.1" "1.1.1.1" "1.0.0.1"];
             };
