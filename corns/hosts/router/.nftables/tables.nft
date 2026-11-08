@@ -28,6 +28,16 @@ table inet filter {
     chain forward {
         type filter hook forward priority filter; policy drop;
 
+        # Esbirros: impedir acceso a redes privadas y link-local
+        iifname "ens20" ip daddr { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16 } counter drop
+
+        # Esbirros: DNS solo hacia sus resolutores configurados
+        iifname "ens20" oifname "ens18" ip saddr 10.10.20.10 ip daddr { 1.1.1.1, 9.9.9.9 } udp dport 53 counter accept
+        iifname "ens20" oifname "ens18" ip saddr 10.10.20.10 ip daddr { 1.1.1.1, 9.9.9.9 } tcp dport 53 counter accept
+
+        # Esbirros: descargas web y conexiones HTTPS
+        iifname "ens20" oifname "ens18" ip saddr 10.10.20.10 tcp dport { 80, 443 } counter accept
+
         ct state { established, related } counter accept comment "Permitir conexiones establecidas"
 
         # Regla de aislamiento: la VPN NO puede tocar la red de casa
