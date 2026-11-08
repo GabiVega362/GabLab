@@ -5,5 +5,5 @@
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 {
     virtualisation.docker.enable = true;
-    environment.etc."rakazo/compose.yaml".source = ./docker-compose.images.yaml;
+    environment.etc."rakazo/compose.yaml".source = ./docker-compose.images.yml;
 }
