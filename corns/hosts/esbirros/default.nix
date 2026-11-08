@@ -14,6 +14,7 @@
       ../../modules/users.nix
       ../../modules/network.nix
       ../../modules/boot.nix
+      ./esbirros/esbirros.nix
     ];
 
 
