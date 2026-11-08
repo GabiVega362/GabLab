@@ -21,6 +21,12 @@
             WEB_ORIGIN = "https://esbirros.gablab.wtf";
             RAKAZO_HOST = "esbirros.gablab.wtf";
             RAKAZO_WEB_BIND = "10.10.20.10";
+            # Un ordenador de bot a la vez: 3 x 2 GiB no caben en esta VM de 4 GiB.
+            SANDBOX_MAX_COMPUTERS_PER_USER = "1";
+            # Duerme el ordenador ocioso a los 5 minutos en vez de 10.
+            SANDBOX_IDLE_MS = "300000";
+            # Clon compartido de solo lectura; se refresca desde el host, no desde los bots.
+            SANDBOX_COMPUTER_MOUNTS = "/var/lib/rakazo/shared:/mnt/shared:ro";
         };
         serviceConfig = {
             Type = "oneshot";
