@@ -73,7 +73,7 @@
             >server "Ministry of Questionable Automation"
             >x-joke "Our agents have root access but no common sense"
         }
-        @oXefe remote_ip 10.10.10.2/32
+        @oXefe remote_ip 10.10.10.2/32 10.10.10.5/32
         handle @oXefe {
             reverse_proxy 10.10.20.10:5173
         }
