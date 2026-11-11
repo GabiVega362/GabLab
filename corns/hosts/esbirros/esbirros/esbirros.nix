@@ -13,6 +13,7 @@
 
     systemd.services.rakazo = {
         description = "Mis esclavos";
+        wantedBy = [ "multi-user.target" ];
         requires = [ "docker.service" ];
         after = [ "docker.service" ];
         environment = {
@@ -35,6 +36,24 @@
             ExecStart = "${pkgs.docker-compose}/bin/docker-compose --env-file /var/lib/rakazo/rakazo.env -f /etc/rakazo/compose.yaml up -d";
             ExecStop = "${pkgs.docker-compose}/bin/docker-compose --env-file /var/lib/rakazo/rakazo.env -f /etc/rakazo/compose.yaml stop";
             TimeoutStopSec = "55min";
+        };
+    };
+
+    systemd.services.rakazo-documentary-supervisor = {
+        requires = [ "rakazo.service" ];
+        after = [ "rakazo.service" ];
+        serviceConfig = {
+            Type = "exec";
+            RuntimeMaxSec = 21900;
+            ExecStart = "${pkgs.docker}/bin/docker exec -u 1000:1000 rakazo-api-1 /usr/bin/timeout --signal=TERM --kill-after=30s 21800s node --import tsx /data/documentary-supervisor/supervisor.mjs /data/documentary-supervisor/config.json";
+            ExecStop = "-${pkgs.docker}/bin/docker exec -u 1000:1000 rakazo-api-1 /usr/bin/pkill -TERM -f '^node --import tsx /data/documentary-supervisor/supervisor[.]mjs /data/documentary-supervisor/config[.]json$'";
+        };
+    };
+    systemd.timers.rakazo-documentary-supervisor = {
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+            OnCalendar = "*-*-* 06:05:00 Europe/Madrid";
+            Persistent = true;
         };
     };
 
